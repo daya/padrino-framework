@@ -39,8 +39,9 @@ module Padrino
       #
       def find_by_request(request)
         rotation do |offset|
-          if route = match?(offset, request.path_info)
-            params = route.params_for(request.path_info, request.params)
+          pattern  = request.path_info.encode(Encoding.default_external)
+          if route = match?(offset, pattern)
+            params = route.params_for(pattern, request.params)
             yield(route, params, offset) if route.verb == request.request_method.downcase.to_sym
             route
           end
@@ -51,6 +52,7 @@ module Padrino
       # Finds routes by using PATH_INFO.
       #
       def find_by_pattern(pattern)
+        pattern = pattern.encode(Encoding.default_external)
         rotation { |offset| match?(offset, pattern) }
       end
   
